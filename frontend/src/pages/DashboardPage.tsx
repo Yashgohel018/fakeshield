@@ -73,6 +73,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ initialSource = 'w
   const totalFramesRef = useRef<number>(0);
   const suspiciousFramesRef = useRef<number>(0);
   const highRiskEventsRef = useRef<number>(0);
+  const mediumRiskFrameCountRef = useRef<number>(0);
   const isInferenceActiveRef = useRef<boolean>(false); // Async lock for frame dropping
 
   // 1. Initialize ML Services
@@ -285,7 +286,19 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ initialSource = 'w
                 });
 
                 // Log risk state changes & security events to timeline
-                if (riskEval.riskLevel !== prevRiskLevelRef.current) {
+                // Debounce transient 1-2 frame EMA ramps so LOW->HIGH transitions do not log fake intermediate MEDIUM entries
+                if (riskEval.riskLevel === 'MEDIUM') {
+                  mediumRiskFrameCountRef.current++;
+                } else {
+                  mediumRiskFrameCountRef.current = 0;
+                }
+
+                const shouldLogEvent = 
+                  (riskEval.riskLevel === 'HIGH' && prevRiskLevelRef.current !== 'HIGH') ||
+                  (riskEval.riskLevel === 'LOW' && prevRiskLevelRef.current !== 'LOW') ||
+                  (riskEval.riskLevel === 'MEDIUM' && prevRiskLevelRef.current !== 'MEDIUM' && (mediumRiskFrameCountRef.current >= 3 || primaryFace.isPartialFace));
+
+                if (shouldLogEvent) {
                   const newEvt: EventLogItem = {
                     id: Math.random().toString(36).substring(2, 9),
                     timestamp: new Date().toLocaleTimeString(),
