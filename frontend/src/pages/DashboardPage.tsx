@@ -264,7 +264,6 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ initialSource = 'w
                   highRiskEventsRef.current++;
                   audioAlertRef.current.triggerHighRiskWarning();
                 }
-                prevRiskLevelRef.current = riskEval.riskLevel;
 
                 setDetection({
                   faceBox: {
@@ -284,8 +283,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ initialSource = 'w
                   isPartialFace: primaryFace.isPartialFace
                 });
 
-                // Log state changes to timeline
-                if (riskEval.riskLevel !== prevRiskLevelRef.current) {
+                // Log risk state changes & security events to timeline
+                if (riskEval.riskLevel !== prevRiskLevelRef.current || events.length === 0) {
                   const newEvt: EventLogItem = {
                     id: Math.random().toString(36).substring(2, 9),
                     timestamp: new Date().toLocaleTimeString(),
