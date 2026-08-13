@@ -72,10 +72,10 @@ export const LandingPage: React.FC = () => {
           {/* Left Column: Headline & Action Launchers */}
           <div className="lg:col-span-6 space-y-6 text-left">
             
-            {/* Hackathon Badge */}
+            {/* Production System Badge */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-bold uppercase tracking-wider backdrop-blur-md shadow-inner">
               <Shield className="w-4 h-4 text-cyan-400" />
-              <span>PS-02 AI + Cybersecurity &bull; Hackathon System</span>
+              <span>Real-Time AI Cybersecurity Platform</span>
             </div>
 
             {/* Title */}
@@ -293,7 +293,7 @@ export const LandingPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <Shield className="w-4 h-4 text-cyan-400" />
             <span className="font-bold text-white">FakeShield PROT-V1.0</span>
-            <span>&bull; Hackathon Production Release</span>
+            <span>&bull; Enterprise Cybersecurity System</span>
           </div>
 
           <p>Built with React, TypeScript, Three.js WebGL, MediaPipe &amp; ONNX Runtime Web</p>

@@ -1,14 +1,13 @@
-# Hackathon Project Abstract — FakeShield
+# System Overview & Executive Abstract — FakeShield
 
-**Project Title:** FakeShield: Real-Time Deepfake Detection for Live Video Calls  
-**Problem Statement:** PS-02 | Real-Time Deepfake Detection for Live Video Calls  
+**Project Title:** FakeShield: Real-Time Deepfake Protection for Live Video Calls  
 **Domain:** AI + Cybersecurity + Computer Vision  
 **Target Frame Rate:** &ge; 15 FPS on Standard CPU  
 **Target False Positive Rate:** &le; 10% on Clean Video  
 
 ---
 
-## 1. Problem Statement & Motivation
+## 1. Problem Vector & Motivation
 Deepfake generative video models have lowered the barrier to real-time facial manipulation, presenting urgent security threats to video communication platforms. Attackers exploit live video streams for identity theft, executive impersonation during corporate calls, financial KYC bypass, and remote interview fraud. Conventional deepfake detection systems operate offline on pre-recorded videos using heavy GPU clusters. Live video calls require an immediate, client-side, zero-trust detection system that alerts users to manipulated faces in real time without compromising privacy.
 
 ## 2. Technical Solution & Architecture

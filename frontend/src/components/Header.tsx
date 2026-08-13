@@ -8,13 +8,15 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({
-  isSystemActive = true,
+  isSystemActive,
   fps = 0
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
   const currentPath = location.pathname;
+  const isDetectionRoute = currentPath === '/detection' || currentPath === '/videocall';
+  const activeStatus = isSystemActive !== undefined ? isSystemActive : isDetectionRoute;
 
   return (
     <header className="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 px-4 lg:px-8 py-3">
@@ -93,9 +95,9 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Live Telemetry Status Badge */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 bg-slate-950/80 px-3 py-1.5 rounded-lg border border-slate-800 text-xs">
-            <span className={`w-2 h-2 rounded-full ${isSystemActive ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'}`}></span>
+            <span className={`w-2 h-2 rounded-full ${activeStatus ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'}`}></span>
             <span className="font-mono text-slate-300">
-              {isSystemActive ? `ENGINE ACTIVE (${fps.toFixed(1)} FPS)` : 'ENGINE IDLE'}
+              {activeStatus ? `ENGINE ACTIVE (${fps.toFixed(1)} FPS)` : 'ENGINE IDLE'}
             </span>
           </div>
 

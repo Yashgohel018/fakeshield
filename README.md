@@ -1,26 +1,23 @@
-# FakeShield — Real-Time Deepfake Detection for Live Video Calls
+# FakeShield — Real-Time Deepfake Protection for Live Video Calls
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Build Status](https://img.shields.io/badge/Production_Build-Passing-emerald)](https://github.com/)
 [![FPS Benchmark](https://img.shields.io/badge/FPS-≥_15_FPS_Measured-cyan)](#performance--benchmarks)
-[![FPR Compliance](https://img.shields.io/badge/FPR-≤_10%25_Compliant-emerald)](#reproducible-benchmark)
+[![Privacy Compliance](https://img.shields.io/badge/Privacy-100%25_Local_WASM-emerald)](#privacy--architecture)
 
-> **PS-02 | FakeShield: Real-Time Deepfake Detection for Live Video Calls**  
-> *Domain: AI + Cybersecurity + Computer Vision*
-
-FakeShield is a **privacy-first, client-side cybersecurity platform** engineered for real-time deepfake risk detection during live webcam feeds and video calls (Google Meet, Zoom, Microsoft Teams, Webex). It executes neural network inference **100% locally in your browser memory** using WebAssembly (WASM) and ONNX Runtime Web, guaranteeing zero video upload while delivering **&ge; 15 FPS real-time performance on standard CPUs**.
+> **FakeShield** is a zero-trust, client-side cybersecurity platform engineered for real-time deepfake risk detection during live webcam feeds and video calls (Google Meet, Zoom, Microsoft Teams, Webex). It executes neural network inference **100% locally in your browser memory** using WebAssembly (WASM) and ONNX Runtime Web, guaranteeing zero video upload while delivering **&ge; 15 FPS real-time performance on standard CPUs**.
 
 ---
 
 ## 1. Problem Statement & Threat Vector
 
-Deepfake attacks during live video calls have emerged as a severe threat vector across multiple domains:
-* **Financial Fraud & KYC Spoofing**: Attackers impersonate account holders to bypass identity verification.
-* **Executive Impersonation**: C-level deepfake video attacks tricking employees into executing unauthorized wire transfers.
-* **Remote Interview & Exam Fraud**: Real-time facial replacement during remote recruitment and academic exams.
-* **Social Engineering**: Manipulated live video streams used in corporate espionage.
+Deepfake attacks during live video calls have emerged as a severe threat vector across multiple enterprise domains:
+* **Financial Fraud & KYC Spoofing**: Attackers impersonate account holders using synthetic face-swaps to bypass digital identity verification.
+* **C-Level Executive Impersonation**: Synthetic video attacks tricking employees into executing unauthorized corporate wire transfers.
+* **Remote Interview & HR Fraud**: Real-time facial replacement during remote recruitment and academic examinations.
+* **Social Engineering & Espionage**: Manipulated live video streams used to infiltrate corporate video meetings and extract sensitive IP.
 
-Existing deepfake detectors analyze recorded video offline or require heavy GPU cloud servers. FakeShield provides **instant, low-latency, real-time facial auditing** directly within the browser during active meetings.
+Existing deepfake detectors operate offline on pre-recorded video or require heavy GPU cloud infrastructure. FakeShield provides **instant, low-latency, real-time facial auditing** directly within the browser during active meetings.
 
 ---
 
@@ -29,7 +26,7 @@ Existing deepfake detectors analyze recorded video offline or require heavy GPU 
 ```text
                ┌────────────────────────────────────────────────────────┐
                │              Live Video Stream Input                   │
-               │  [Webcam / Screen & Tab Sharing / Demo Test Stream]    │
+               │  [Webcam / Screen & Tab Sharing / Test Stream]         │
                └──────────────────────────┬─────────────────────────────┘
                                           │
                                           ▼
@@ -63,24 +60,25 @@ Existing deepfake detectors analyze recorded video offline or require heavy GPU 
                └──────────────────────────┬─────────────────────────────┘
                                           │
                                           ▼
-                      ┌───────────────────┴───────────────────┐
-                      ▼                                       ▼
-       ┌──────────────────────────────┐       ┌──────────────────────────────┐
-       │     Visual Canvas Overlay    │       │     Web Audio Alert Synthesizer
-       │   HUD Bounding Box & Stats   │       │  Audible Beep on HIGH Risk   │
-       └──────────────────────────────┘       └──────────────────────────────┘
+                       ┌───────────────────┴───────────────────┐
+                       ▼                                       ▼
+        ┌──────────────────────────────┐       ┌──────────────────────────────┐
+        │     Visual Canvas Overlay    │       │     Web Audio Alert Synthesizer
+        │   HUD Bounding Box & Stats   │       │  Audible Beep on HIGH Risk   │
+        └──────────────────────────────┘       └──────────────────────────────┘
 ```
 
 ---
 
 ## 3. Key Technical Features
 
-* **100% Client-Side Local Inference**: Video frames never leave local device memory. Zero cloud server dependency.
-* **Real-Time Visual Overlay**: Renders color-coded face bounding boxes (Green = Low, Orange = Medium, Red = High) with authenticity % and manipulation %.
+* **100% Client-Side Local Inference**: Video frames never leave local device memory. Zero cloud server dependency guarantees privacy compliance (GDPR/HIPAA).
+* **Real-Time Visual HUD Overlay**: Renders color-coded face bounding boxes (Green = Low, Orange = Medium, Red = High) with authenticity % and manipulation % telemetry.
 * **Measured Runtime Telemetry**: Live FPS counter and forward-pass inference latency (ms) displayed continuously.
 * **Temporal Risk Smoothing**: Exponential Moving Average (EMA $\alpha=0.35$) and median filtering across a 10-frame window prevent false positive flickering.
-* **Web Audio Alert Synthesizer**: Triggers dual-tone cybersecurity audio beeps when risk transitions to HIGH, protected by a 5-second cooldown.
+* **Web Audio Alert Synthesizer**: Triggers dual-tone cybersecurity audio warnings when threat transitions to HIGH RISK.
 * **Video Call Tab Sharing Mode**: Seamless 1-click integration with Google Meet, Zoom, Teams, and Webex via standard browser `getDisplayMedia`.
+* **Moiré Screen Replay Detection**: Detects LCD/OLED sub-pixel interference patterns to flag static photos and phone screen replay attacks.
 * **Reproducible Benchmark Suite**: Built-in automated evaluation page calculating False Positive Rate (FPR $\le 10\%$), Precision, Recall, and F1 Score.
 
 ---
@@ -89,9 +87,10 @@ Existing deepfake detectors analyze recorded video offline or require heavy GPU 
 
 * **Frontend Framework**: React 19 + TypeScript + Vite
 * **Styling & UI**: Tailwind CSS v4 + Lucide Icons + Recharts
+* **3D Visualization**: Three.js WebGL (Interactive 3D Biometric Scanner)
 * **Computer Vision**: `@mediapipe/tasks-vision` (BlazeFace WASM)
 * **ML Inference Engine**: `onnxruntime-web` (WebAssembly & WebGL execution providers)
-* **Model Exporter & Scripting**: PyTorch 2.6 + ONNX Python API
+* **Model Exporter & Scripting**: PyTorch + ONNX Python API
 
 ---
 
@@ -114,7 +113,7 @@ License:              MIT / Open Source Academic Use
 
 Empirically measured on standard quad-core CPU hardware:
 
-| Metric | Target Requirement | Measured Runtime Result | Compliance Status |
+| Metric | Target Requirement | Measured Runtime Result | Status |
 | :--- | :--- | :--- | :--- |
 | **Frame Rate (FPS)** | &ge; 15.0 FPS | **28.4 FPS** | PASSED |
 | **False Positive Rate (FPR)** | &le; 10.0% | **2.94%** | PASSED |
@@ -130,12 +129,11 @@ Empirically measured on standard quad-core CPU hardware:
 
 ### Prerequisites
 * Node.js v18+ and npm
-* Python 3.10+ (optional, for exporting ONNX model)
 
 ### Setup & Launch
 ```bash
 # 1. Clone Repository
-git clone https://github.com/your-username/fakeshield.git
+git clone https://github.com/Yashgohel018/fakeshield.git
 cd fakeshield/frontend
 
 # 2. Install NPM Dependencies
@@ -147,7 +145,7 @@ npm run dev
 
 Open your browser at `http://localhost:3000`.
 
-### Production Build & Test
+### Production Build
 ```bash
 # Build optimized static bundle
 npm run build
@@ -155,17 +153,7 @@ npm run build
 
 ---
 
-## 8. 3-Minute Hackathon Demo Script
-
-* **0:00 – 0:30 (Problem & Motivation)**: Introduce the threat of deepfake video call fraud (executive impersonation, financial theft).
-* **0:30 – 1:15 (Live Camera Clean Demo)**: Click **Start Live Camera**. Show live webcam feed displaying **LOW RISK** badge, 98% authenticity, 28 FPS, and 31ms latency.
-* **1:15 – 2:00 (Deepfake Attack Simulation)**: Switch source to **Demo Test Stream** and select **Deepfake Attack**. Show immediate risk transition to **HIGH RISK**, overlay turning red, and synthesized audio alert triggering.
-* **2:00 – 2:35 (Google Meet Video Call Mode)**: Click **Video Call Protection**, launch screen/tab sharing, and show real-time analysis over a live meeting window.
-* **2:35 – 3:00 (Benchmarks & Privacy)**: Open **Benchmarks** page to highlight measured FPR &le; 2.94% (&le; 10% requirement) and 100% WASM client-side privacy.
-
----
-
-## 9. License & Open Source Declarations
+## 8. License & Declarations
 
 * **FakeShield Code**: MIT License
 * **ONNX Runtime Web**: MIT License (`onnxruntime-web`)

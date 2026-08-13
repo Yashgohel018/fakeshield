@@ -81,7 +81,7 @@ export const BenchmarkPage: React.FC = () => {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-semibold uppercase mb-3">
             <BarChart3 className="w-4 h-4 text-cyan-400" />
-            Hackathon Verification Suite — PS-02
+            System Performance Audit Suite
           </div>
           <h1 className="text-3xl font-extrabold text-white tracking-tight">
             Reproducible AI Benchmark Suite
@@ -140,7 +140,7 @@ export const BenchmarkPage: React.FC = () => {
               </span>
             </div>
             <p className="text-xs text-slate-300 mt-1">
-              Official Hackathon Requirement: FPR &le; 10.0%. Current Measured FPR: <strong className="font-mono text-emerald-400 text-sm">{(metrics.fpr * 100).toFixed(2)}%</strong>
+              Production Standard Requirement: FPR &le; 10.0%. Current Measured FPR: <strong className="font-mono text-emerald-400 text-sm">{(metrics.fpr * 100).toFixed(2)}%</strong>
             </p>
           </div>
         </div>
