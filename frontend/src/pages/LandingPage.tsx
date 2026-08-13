@@ -292,7 +292,7 @@ export const LandingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Shield className="w-4 h-4 text-cyan-400" />
-            <span className="font-bold text-white">FakeShield PROT-V1.0</span>
+            <span className="font-bold text-white">FakeShield</span>
             <span>&bull; Enterprise Cybersecurity System</span>
           </div>
 

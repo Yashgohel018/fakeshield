@@ -33,9 +33,6 @@ export const Header: React.FC<HeaderProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <span className="font-bold text-xl tracking-tight text-white">FakeShield</span>
-              <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-                PROT-V1.0
-              </span>
             </div>
             <p className="text-xs text-slate-400 hidden sm:block">Real-Time Deepfake Video Call Protection</p>
           </div>
