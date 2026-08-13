@@ -60,14 +60,43 @@ export class ONNXInferenceService {
       const imgData = ctx.getImageData(0, 0, faceCanvas.width, faceCanvas.height);
       const { data, width, height } = imgData;
 
-      // --- Liveness & Micro-Motion Verification (Detects Non-Live Static Photos / Still Web Images) ---
+      // --- Liveness & Organic Deformability Verification (Rejects Rigid Printed Photos / Paper Sheets / Phone Screens) ---
       let motionDiffSum = 0;
+      let q1Diff = 0, q2Diff = 0, q3Diff = 0, q4Diff = 0;
+      let q1Count = 0, q2Count = 0, q3Count = 0, q4Count = 0;
+      let whitePaperPixelCount = 0;
+
+      const halfW = width / 2;
+      const halfH = height / 2;
+
       if (this.prevFacePixelBuffer && this.prevFacePixelBuffer.length === data.length) {
-        for (let k = 0; k < data.length; k += 16) {
-          motionDiffSum += Math.abs(data[k] - this.prevFacePixelBuffer[k]);
+        for (let y = 0; y < height; y += 2) {
+          for (let x = 0; x < width; x += 2) {
+            const idx = (y * width + x) * 4;
+            const diff = Math.abs(data[idx] - this.prevFacePixelBuffer[idx]) +
+                         Math.abs(data[idx + 1] - this.prevFacePixelBuffer[idx + 1]) +
+                         Math.abs(data[idx + 2] - this.prevFacePixelBuffer[idx + 2]);
+
+            motionDiffSum += diff;
+
+            // Quadrant Breakdown (Top-Left, Top-Right, Bottom-Left, Bottom-Right)
+            if (x < halfW && y < halfH) { q1Diff += diff; q1Count++; }
+            else if (x >= halfW && y < halfH) { q2Diff += diff; q2Count++; }
+            else if (x < halfW && y >= halfH) { q3Diff += diff; q3Count++; }
+            else { q4Diff += diff; q4Count++; }
+
+            // Paper Sheet / Document Margin Edge Detection (High brightness white paper border surrounding face)
+            const r = data[idx], g = data[idx + 1], b = data[idx + 2];
+            const isBorderPixel = x < 14 || x > width - 14 || y < 14 || y > height - 14;
+            if (isBorderPixel && r > 215 && g > 215 && b > 215) {
+              whitePaperPixelCount++;
+            }
+          }
         }
       }
-      const currentMotionDiff = motionDiffSum / (data.length / 16);
+
+      const totalSampledPixels = (width * height) / 4;
+      const currentMotionDiff = motionDiffSum / totalSampledPixels;
       this.prevFacePixelBuffer = new Uint8ClampedArray(data);
 
       this.motionHistory.push(currentMotionDiff);
@@ -79,8 +108,27 @@ export class ONNXInferenceService {
         ? this.motionHistory.reduce((a, b) => a + b, 0) / this.motionHistory.length 
         : 5.0;
 
-      // If face crop exhibits zero micro-motion over consecutive frames -> Static Photo / Screen Image Spoof!
+      // 4-Quadrant Motion Variance (Measures Organic Deformability vs Rigid Flat Board Shift)
+      const q1Avg = q1Count > 0 ? q1Diff / q1Count : 0;
+      const q2Avg = q2Count > 0 ? q2Diff / q2Count : 0;
+      const q3Avg = q3Count > 0 ? q3Diff / q3Count : 0;
+      const q4Avg = q4Count > 0 ? q4Diff / q4Count : 0;
+      const qMean = (q1Avg + q2Avg + q3Avg + q4Avg) / 4;
+
+      const motionVariance = Math.sqrt(
+        (Math.pow(q1Avg - qMean, 2) + Math.pow(q2Avg - qMean, 2) +
+         Math.pow(q3Avg - qMean, 2) + Math.pow(q4Avg - qMean, 2)) / 4
+      );
+
+      // 1. Static Frozen Frame Spoof
       const isStaticPhoto = this.motionHistory.length >= 6 && avgMotion < 1.15;
+      
+      // 2. Rigid Flat Board / Paper Sheet / Phone Screen Shift (Entire face moves as a 100% rigid card without organic deformation)
+      const isRigidPhotoSpoof = this.motionHistory.length >= 6 && avgMotion > 1.2 && avgMotion < 40.0 && motionVariance < 0.22;
+
+      // 3. White Paper Document Margin Detection (Face inside a printed paper sheet with white margins)
+      const borderSampleCount = (width * 14 * 2 + height * 14 * 2) / 4;
+      const isPaperDocumentSpoof = (whitePaperPixelCount / borderSampleCount) > 0.18;
 
       // 1. Prepare ONNX Input Tensor [1, 3, H, W] normalized [-1.0, 1.0]
       const float32Data = new Float32Array(3 * width * height);
@@ -150,8 +198,8 @@ export class ONNXInferenceService {
         spatialFeatureScore = Math.max(spatialFeatureScore, 0.52);
       }
 
-      // Force High Risk penalty if non-live static photo is detected
-      if (isStaticPhoto) {
+      // Force High Risk penalty if non-live rigid photo, printed paper sheet, or static image is detected
+      if (isStaticPhoto || isRigidPhotoSpoof || isPaperDocumentSpoof) {
         spatialFeatureScore = Math.max(spatialFeatureScore, 0.88);
       }
 
