@@ -10,6 +10,7 @@ export interface BoundingBox {
 export interface DetectedFace {
   boundingBox: BoundingBox;
   confidence: number;
+  isPartialFace?: boolean;
 }
 
 export class FaceDetectionService {
@@ -56,20 +57,35 @@ export class FaceDetectionService {
       return [];
     }
 
+    const vw = videoElement.videoWidth;
+    const vh = videoElement.videoHeight;
+
     try {
       if (this.faceDetector) {
         const detections = this.faceDetector.detectForVideo(videoElement, timestampMs);
         if (detections && detections.detections && detections.detections.length > 0) {
           return detections.detections.map(det => {
             const bbox = det.boundingBox!;
+            const ox = Math.max(0, bbox.originX);
+            const oy = Math.max(0, bbox.originY);
+            const w = bbox.width;
+            const h = bbox.height;
+
+            // Detect if face touches frame border (truncated face) or has abnormal cropped aspect ratio
+            const isBorderTouch = (oy + h >= vh * 0.94) || (oy <= vh * 0.04) || (ox <= vw * 0.04) || (ox + w >= vw * 0.94);
+            const aspectRatio = h / (w || 1);
+            const isAbnormalAspect = aspectRatio < 0.85 || aspectRatio > 1.65;
+            const isPartialFace = isBorderTouch || isAbnormalAspect;
+
             return {
               boundingBox: {
-                originX: Math.max(0, bbox.originX),
-                originY: Math.max(0, bbox.originY),
-                width: bbox.width,
-                height: bbox.height
+                originX: ox,
+                originY: oy,
+                width: w,
+                height: h
               },
-              confidence: det.categories[0]?.score || 0.95
+              confidence: det.categories[0]?.score || 0.95,
+              isPartialFace
             };
           });
         }

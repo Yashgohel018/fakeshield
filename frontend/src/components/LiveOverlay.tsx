@@ -129,7 +129,10 @@ export const LiveOverlay: React.FC<LiveOverlayProps> = ({
     let mainColor = '#10B981'; // Low - Emerald Green
     let badgeText = 'LOW RISK';
 
-    if (riskLevel === 'HIGH') {
+    if (detection.isPartialFace) {
+      mainColor = '#F59E0B'; // Partial face - Amber
+      badgeText = 'PARTIAL FACE DETECTED (CENTER FACE)';
+    } else if (riskLevel === 'HIGH') {
       mainColor = '#EF4444'; // High - Red
       badgeText = 'HIGH RISK — POTENTIAL DEEPFAKE';
     } else if (riskLevel === 'MEDIUM') {

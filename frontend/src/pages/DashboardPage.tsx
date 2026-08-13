@@ -240,7 +240,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ initialSource = 'w
                 );
 
                 // C. ONNX Deepfake Model Prediction
-                const inferenceRes = await onnxInferenceRef.current.predict(offCanvas);
+                const inferenceRes = await onnxInferenceRef.current.predict(offCanvas, primaryFace.isPartialFace);
 
                 // D. Temporal Risk Filter & Evaluation
                 const isDeepfakeMode = testVideoModeRef.current === 'deepfake' && sourceTypeRef.current === 'testvideo';
@@ -251,6 +251,10 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ initialSource = 'w
                 const smoothedScore = temporalFilterRef.current.filter(rawScore);
                 const riskEval = riskEngineRef.current.evaluate(smoothedScore);
 
+                if (primaryFace.isPartialFace && riskEval.riskLevel === 'MEDIUM') {
+                  riskEval.label = 'PARTIAL FACE DETECTED (FULL FACE REQUIRED)';
+                }
+
                 // E. Telemetry & Counters
                 if (riskEval.riskLevel !== 'LOW') {
                   suspiciousFramesRef.current++;
@@ -260,6 +264,25 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ initialSource = 'w
                   highRiskEventsRef.current++;
                   audioAlertRef.current.triggerHighRiskWarning();
                 }
+                prevRiskLevelRef.current = riskEval.riskLevel;
+
+                setDetection({
+                  faceBox: {
+                    x: originX / video.videoWidth,
+                    y: originY / video.videoHeight,
+                    width: width / video.videoWidth,
+                    height: height / video.videoHeight
+                  },
+                  rawScore,
+                  smoothedScore,
+                  riskLevel: riskEval.riskLevel,
+                  authenticityScore: riskEval.authenticityScore,
+                  manipulationScore: riskEval.manipulationScore,
+                  confidence: primaryFace.confidence,
+                  inferenceTimeMs: Math.round(inferenceRes.inferenceTimeMs),
+                  timestamp: now,
+                  isPartialFace: primaryFace.isPartialFace
+                });
 
                 // Log state changes to timeline
                 if (riskEval.riskLevel !== prevRiskLevelRef.current) {

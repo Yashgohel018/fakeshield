@@ -19,6 +19,7 @@ export interface DetectionResult {
   confidence: number;          // Face detection confidence
   inferenceTimeMs: number;
   timestamp: number;
+  isPartialFace?: boolean;
 }
 
 export interface SystemMetrics {

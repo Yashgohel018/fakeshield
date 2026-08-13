@@ -48,7 +48,7 @@ export class ONNXInferenceService {
   /**
    * Performs deepfake detection inference on a 128x128 face crop image canvas
    */
-  public async predict(faceCanvas: HTMLCanvasElement): Promise<InferenceResult> {
+  public async predict(faceCanvas: HTMLCanvasElement, isPartialFace: boolean = false): Promise<InferenceResult> {
     const startTime = performance.now();
 
     try {
@@ -144,6 +144,11 @@ export class ONNXInferenceService {
         0.95,
         Math.max(0.04, (artifactRatio * 4.5) + (redDisparityRatio * 3.5) + (seamRatio * 3.0) + (isReplaySpoof ? 0.65 : 0.0))
       );
+
+      // Force Partial Face Occlusion penalty if face is truncated at frame border
+      if (isPartialFace) {
+        spatialFeatureScore = Math.max(spatialFeatureScore, 0.52);
+      }
 
       // Force High Risk penalty if non-live static photo is detected
       if (isStaticPhoto) {
