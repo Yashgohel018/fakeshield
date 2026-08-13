@@ -69,7 +69,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ initialSource = 'w
   const lastFrameTimeRef = useRef<number>(performance.now());
   const frameCountRef = useRef<number>(0);
   const fpsWindowRef = useRef<number[]>([]);
-  const prevRiskLevelRef = useRef<string>('LOW');
+  const prevRiskLevelRef = useRef<string>('');
   const totalFramesRef = useRef<number>(0);
   const suspiciousFramesRef = useRef<number>(0);
   const highRiskEventsRef = useRef<number>(0);
@@ -123,6 +123,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ initialSource = 'w
     if (videoRef.current) {
       videoRef.current.srcObject = null;
     }
+    prevRiskLevelRef.current = '';
     setIsProcessing(false);
   };
 
@@ -284,7 +285,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ initialSource = 'w
                 });
 
                 // Log risk state changes & security events to timeline
-                if (riskEval.riskLevel !== prevRiskLevelRef.current || events.length === 0) {
+                if (riskEval.riskLevel !== prevRiskLevelRef.current) {
                   const newEvt: EventLogItem = {
                     id: Math.random().toString(36).substring(2, 9),
                     timestamp: new Date().toLocaleTimeString(),
